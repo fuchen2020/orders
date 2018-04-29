@@ -1,6 +1,7 @@
 <?php
 
 namespace app\api\controller;
+use app\index\model\Users;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\ValidationData;
 use think\Controller;
@@ -9,32 +10,23 @@ use think\Db;
 
 class BaseController extends Controller
 {
-    protected $user=[];
+    public $user=null;
     //token验证------------------------------------------------------------
     protected function _initialize()
     {
-        if(request()->action()!='login'){
-            $token =request()->param('sign');
-            $re=[
-                "code"=>200,
-                "success" => false,
-                "errorMsg" =>'签名无效',
-                "result" =>null,
-            ];
+//        if(request()->action()){
+            $token =request()->header('token');
             if (!$token) {
-                exit(json_encode($re));
+                return $this->zJson('',400,false,'签名无效');
             }
-
             $token = request()->header('token').'kami2';
-            $data=Db::table('users')->where('token',md5($token))->find()->toArray();
+            $data=(new Users())->where('token',md5($token))->find();
 
             if (empty($data)) {
-                exit(json_encode($re));
-            }else{
-                $this->user=$data;
+                return $this->zJson('',400,false,'签名无效');
             }
-
-        }
+             $this->user=$data;
+//        }
 
         parent::_initialize();
     }
@@ -55,5 +47,10 @@ class BaseController extends Controller
         return json($data);
     }
 
-    
+    //获取用户模型
+    protected function UserModel(){
+        return $this->user;
+    }
+
+
 }

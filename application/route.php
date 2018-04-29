@@ -16,15 +16,17 @@ Route::rule('index/ws','index/index/ws');
 
 //api接口路由
 
-Route::post(":v/login","api/:v.index/login");
-Route::post(":v/regist","api/:v.index/regist");
-Route::post(":v/reset","api/:v.index/reset");
-Route::post(":v/searchProduct","api/:v.index/searchProduct");
-Route::post(":v/shopCar","api/:v.index/shopCar");
-Route::post(":v/toShopCar","api/:v.index/toShopCar");
-Route::post(":v/shopCarNum","api/:v.index/shopCarNum");
-Route::post(":v/delShopCar","api/:v.index/delShopCar");
-
 //发送短信验证码
-Route::post(":v/sendSms","api/:v.reg/sendSms");
-
+Route::post("api/:v/sendSms","api/:v.reg/sendSms");
+//注册账号
+Route::post("api/:v/regist","api/:v.reg/regist");
+//用户登陆
+Route::post("api/:v/login","api/:v.reg/login");
+//获取用户信息 getUser
+Route::any("api/:v/getUser","api/:v.index/getUser");
+//获取用户订单信息
+Route::any("api/:v/getOrderList","api/:v.index/getOrderList");
+//修改订单异常账户
+Route::any("api/:v/setGaemAccount","api/:v.index/setGaemAccount");
+//暂停|继续|结束订单
+Route::any("api/:v/setOrderStatus","api/:v.index/setOrderStatus");
