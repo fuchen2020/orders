@@ -107,7 +107,6 @@ class RegController extends CurlController
             }
 
         } else {
-
             return $this->zJson('', 200,false, '用户名不正确');
         }
 

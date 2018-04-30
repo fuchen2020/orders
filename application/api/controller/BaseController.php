@@ -1,6 +1,7 @@
 <?php
 
 namespace app\api\controller;
+use app\index\model\Config;
 use app\index\model\Users;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\ValidationData;
@@ -14,19 +15,19 @@ class BaseController extends Controller
     //token验证------------------------------------------------------------
     protected function _initialize()
     {
-//        if(request()->action()){
+        if(!empty(request()->action())){
             $token =request()->header('token');
             if (!$token) {
-                return $this->zJson('',400,false,'签名无效');
+                return zJson('',400,false,'签名无效');
             }
+
             $token = request()->header('token').'kami2';
             $data=(new Users())->where('token',md5($token))->find();
-
             if (empty($data)) {
-                return $this->zJson('',400,false,'签名无效');
+                return zJson('',400,false,'签名无效');
             }
              $this->user=$data;
-//        }
+        }
 
         parent::_initialize();
     }
@@ -51,6 +52,13 @@ class BaseController extends Controller
     protected function UserModel(){
         return $this->user;
     }
+
+    //获取配置value
+    protected function getConfig($name){
+        $re=(new Config())->where('name',$name)->find();
+        return $re->value;
+    }
+
 
 
 }

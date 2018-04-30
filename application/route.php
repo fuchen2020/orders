@@ -30,3 +30,14 @@ Route::any("api/:v/getOrderList","api/:v.index/getOrderList");
 Route::any("api/:v/setGaemAccount","api/:v.index/setGaemAccount");
 //暂停|继续|结束订单
 Route::any("api/:v/setOrderStatus","api/:v.index/setOrderStatus");
+//获取游戏版本列表
+Route::any("api/:v/getGameVersion","api/:v.index/getGameVersion");
+//获取订单页信息
+Route::any("api/:v/getExplain","api/:v.index/getExplain");
+//提交订单
+Route::post("api/:v/setOrder","api/:v.index/setOrder");
+//用户充值
+Route::post("api/:v/recharge","api/:v.index/recharge");
+//获取用户消费记录
+Route::any("api/:v/getConsumeLog","api/:v.index/getConsumeLog");
+
