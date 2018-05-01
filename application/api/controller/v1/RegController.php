@@ -18,20 +18,33 @@ class RegController extends CurlController
 {
     //您的注册验证码：8585，如非本人操作，请忽略本短信【小雨云】
     public function sendSms($phone){
-        $code=rand(999,99999);
-        $content="您的注册验证码：{$code}，如非本人操作，请忽略本短信【小雨云】";
-        $re=$this->sendCode($phone,$content);
-       if($re['msg']=="ok"){
-           $codeModel=new SmsCode();
-           $codeModel->insert([
-               'phone'=>$phone,
-               'sms_code'=>$code,
-               'created_at'=>date('Y-m-d H:i:s'),
-           ]);
-           return $this->zJson('',200,true,'验证码发送成功');
-       }else{
-           return $this->zJson('',400,false,'验证码发送失败');
-       }
+        if($phone){
+            $codeModel=new SmsCode();
+            $codes=$codeModel->where('phone',$phone)->find();
+            if (!empty($codes)){
+                $content="您的注册验证码：{$codes->sms_code}，如非本人操作，请忽略本短信【小雨云】";
+                $res=$this->sendCode($phone,$content);
+                if($res['msg']=="ok"){
+                    return $this->zJson('',200,true,'验证码发送成功');
+                }else{
+                    return $this->zJson('',400,false,'验证码发送失败');
+                }
+            }else{
+                $code=rand(999,99999);
+                $content="您的注册验证码：{$code}，如非本人操作，请忽略本短信【小雨云】";
+                $re=$this->sendCode($phone,$content);
+                if($re['msg']=="ok"){
+                    $codeModel->insert([
+                        'phone'=>$phone,
+                        'sms_code'=>$code,
+                        'created_at'=>date('Y-m-d H:i:s'),
+                    ]);
+                    return $this->zJson('',200,true,'验证码发送成功');
+                }else{
+                    return $this->zJson('',400,false,'验证码发送失败');
+                }
+            }
+        }
     }
     /**
      * 会员注册

@@ -304,6 +304,7 @@ class IndexController extends BaseController
         $endTime=date('Y-m-d H:i:s',$time+\request()->post('time')*3600);
 //        dump($endTime);exit;
         $data=\request()->post();
+
         //匹配订单对应机器
         $query=(new Device())->where('status',4)
             ->where('gameversion',$data['game_version']);
@@ -509,24 +510,28 @@ class IndexController extends BaseController
         switch (\request()->param('type')){
             case 1: //充值
                 $list=(new ConsumeLog())->where(['user_id'=>$user_id,'type'=>1])
+                    ->order('created_at', 'desc')
                     ->paginate($size,true,[
                     'page'=>$page,
                 ])->toArray();
                 break;
             case 2:  //消费
                 $list=(new ConsumeLog())->where(['user_id'=>$user_id,'type'=>2])
+                    ->order('created_at', 'desc')
                     ->paginate($size,true,[
                         'page'=>$page,
                     ])->toArray();
                 break;
             case 3:  //赠送
                 $list=(new ConsumeLog())->where(['user_id'=>$user_id,'type'=>3])
+                    ->order('created_at', 'desc')
                     ->paginate($size,true,[
                         'page'=>$page,
                     ])->toArray();
                 break;
             case 4:  //退还
                 $list=(new ConsumeLog())->where(['user_id'=>$user_id,'type'=>4])
+                    ->order('created_at', 'desc')
                     ->paginate($size,true,[
                         'page'=>$page,
                     ])->toArray();
