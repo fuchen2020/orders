@@ -41,3 +41,13 @@ Route::post("api/:v/recharge","api/:v.index/recharge");
 //获取用户消费记录
 Route::any("api/:v/getConsumeLog","api/:v.index/getConsumeLog");
 
+
+Route::any("logout","index/index/logout");
+Route::any("userLists","index/index/userLists");
+Route::any("orderLists","index/index/orderLists");
+Route::any("configLists","index/index/configLists");
+Route::any("cardLists","index/index/cardLists");
+Route::any("adminLogin","index/index/adminLogin");
+Route::any("index","index/index/index");
+Route::any("addCard","index/index/addCard");
+

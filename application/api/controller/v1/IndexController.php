@@ -62,7 +62,8 @@ class IndexController extends BaseController
         switch (\request()->param('type')){
             case 1:
                 $orderList=$order->where(['user_id'=>$user->id])
-                    ->where('status','<',4)
+                    ->where('status','<',5)
+                	 ->order('created_at', 'desc')
                     ->paginate($size,true,[
                         'page'=>$page,
                     ])->toArray();
@@ -74,7 +75,8 @@ class IndexController extends BaseController
                 break;
             case 2:
                 $orderList=$order->where(['user_id'=>$user->id])
-                    ->where(['status'=>4])
+                    ->where(['status'=>5])
+                   ->order('created_at', 'desc')
                     ->paginate($size,true,[
                         'page'=>$page,
                     ])->toArray();
@@ -112,8 +114,9 @@ class IndexController extends BaseController
         if ($re) {
             $re->game_id=$game_id;
             $re->game_pass=$game_pass;
+          	$re->status=1;
             if ($re->save()) {
-                return $this->zJson('',200,true,'异常账号修改成功');
+                return $this->zJson('',200,true,'异常账号正在修复中');
             }else{
                 return $this->zJson('',200,false,'异常账号修改失败');
             }
@@ -144,8 +147,9 @@ class IndexController extends BaseController
                     $re=(new Device())->where('orderid',$orderNo)->find();
                     if ($re) {
                         $re->status=1;
-                        if ($re->save()) {
-                            if ((new Orders())->save(['status'=>4],['order_no',$orderNo])) {
+                      	$res=$re->update();
+                        if ($res) {
+                            if ((new Orders())->save(['status'=>4],['order_no'=>$orderNo])) {
                                 return $this->zJson('',200,true,'订单暂停成功');
                             }
                         }else{
@@ -159,8 +163,8 @@ class IndexController extends BaseController
                     $re=(new Device())->where('orderid',$orderNo)->find();
                     if ($re) {
                         $re->status=2;
-                        if ($re->save()) {
-                            if ((new Orders())->save(['status'=>2],['order_no',$orderNo])) {
+                        if ($re->update()) {
+                            if ((new Orders())->save(['status'=>2],['order_no'=>$orderNo])) {
                                 return $this->zJson('',200,true,'订单已继续');
                             }
                         }else{
@@ -304,7 +308,6 @@ class IndexController extends BaseController
         $endTime=date('Y-m-d H:i:s',$time+\request()->post('time')*3600);
 //        dump($endTime);exit;
         $data=\request()->post();
-
         //匹配订单对应机器
         $query=(new Device())->where('status',4)
             ->where('gameversion',$data['game_version']);
@@ -346,7 +349,8 @@ class IndexController extends BaseController
         $data['created_at']=date('Y-m-d H:i:s',$time);
         $data['updated_at']=date('Y-m-d H:i:s',$time);
         $data['end_time']=$endTime;
-        $data['order_no']=date('YmdHis').uniqid().$data['point'];
+      	$data['order_no']=date('YmdHis').rand(1111,9999).$data['point'];
+        //$data['order_no']=date('YmdHis').uniqid().$data['point'];
 //        dump($data);exit;
         // 启动事务
         Db::startTrans();

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>帐号充值</title>
+    <link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+    <link rel="stylesheet" href="../static/css/base.css">
+    <link rel="stylesheet" href="../static/font/iconfont.css">
+    <style>
+        .notice {
+            background-color: white;
+            margin-top: .5em;
+            padding: 10px;
+            color: #666;
+            font-size: .9em;
+        }
+
+        .notice .small {
+            font-size: .8em;
+        }
+
+        .notice p {
+            margin: .3em 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <mt-header fixed title="帐号充值">
+        <mt-button icon="back" slot="left" @click="goHome"></mt-button>
+    </mt-header>
+    <mt-field class="code" label="兑换充值卡" placeholder="请输入充值卡卡号" v-model="cam.value"></mt-field>
+    <div class="notice">
+        <p>充值说明:</p>
+        <p class="small">
+            1, 在淘宝上购买充值卡,输入到上面后点击充值即可
+            <br>
+            2, 充值过程中,遇到任何问题请联系客服处理
+        </p>
+    </div>
+    <mt-button class="submit" size="large" :type="cam.type" :disabled="cam.disabled" @click.native="submit">立即充值
+    </mt-button>
+</div>
+<!-- 先引入 Vue -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+<script src="../static/js/validator.js"></script>
+<script src="../static/js/fly.js"></script>
+<script src="../static/js/base.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            cam: {value: '', type: 'primary', disabled: false}
+        },
+        methods: {
+            // 返回个人中心首页
+            goHome() {
+                location.href = './home.html';
+            },
+            // 立即充值
+            submit() {
+                // 验证卡号
+                if (this.cam.length < 1) {
+                    return this.$toast('请输入卡号');
+                }
+                // 禁用按钮
+                this.cam.type = `default`;
+                this.cam.disabled = true;
+                fly.post('recharge', {
+                    cam: this.cam.value
+                })
+                    .then(res => {
+                        this.$toast(res.data.msg);
+                        if (res.data.success) {
+                            return location.href = './home.html';
+                        }
+                        this.cam.type = 'primary';
+                        this.cam.disabled = false;
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        this.cam.type = 'primary';
+                        this.cam.disabled = false;
+                    })
+            }
+        }
+    })
+</script>
+</body>
+</html>

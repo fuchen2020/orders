@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登陆</title>
+    <link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+    <link rel="stylesheet" href="../static/css/base.css">
+    <link rel="stylesheet" href="../static/font/iconfont.css">
+    <style>
+        .icon-qq {
+            margin-right: .4em;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <mt-header fixed title="登陆"></mt-header>
+    <div class="logo">
+        <img src=https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3169309491,3410593409&fm=27&gp=0.jpg""
+             alt="">
+    </div>
+    <div class="form">
+        <mt-field label="手机号" placeholder="请输入注册时的手机号" v-model="phone.value"></mt-field>
+        <mt-field label="密码" placeholder="请输入密码" type="password"
+                  v-model="password.value"></mt-field>
+    </div>
+    <mt-button class="submit" type="primary" size="large" @click.native="submit">登陆</mt-button>
+    <mt-button class="submit" type="default" size="large" @click="goRegister">没有帐号? 立即注册</mt-button>
+    <div class="link">
+        <span class="iconfont icon-qq"></span><a href="####">客服QQ:25454545</a>
+    </div>
+</div>
+<!-- 先引入 Vue -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+<script src="../static/js/validator.js"></script>
+<script src="../static/js/fly.js"></script>
+<script src="../static/js/base.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            phone: {value: '', state: ''},
+            password: {value: '', state: ''}
+        },
+        methods: {
+            isPhone(e) {
+                const phone = e.srcElement.value;
+                console.log(phone);
+            },
+            isPassword(e) {
+                console.log(e);
+                const password = e.srcElement.value;
+                console.log(password);
+            },
+            // 跳转到注册页面
+            goRegister() {
+                location.href = './register.html';
+            },
+            // 立即登陆
+            submit() {
+                const that = this;
+                fly.post('login', {
+                    phone: that.phone.value,
+                    pass: that.password.value
+                })
+                    .then(res => {
+                        this.$toast(res.data.msg);
+                        if (res.data.success) {
+                            // todo token应该加密之后再存
+                            localStorage.setItem('token', res.data.result.sign);
+                            location.href = './home.html'
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+            }
+        }
+    })
+</script>
+</body>
+</html>
