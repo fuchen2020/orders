@@ -113,7 +113,7 @@ class IndexController extends BaseController
         $re=(new Orders())->where('order_no',$orderNo)->find();
         if ($re) {
             $re->game_id=$game_id;
-            $re->game_pass=$game_pass;
+            $re->game_pass=$this->enascii($game_pass);
           	$re->status=1;
             if ($re->save()) {
                 return $this->zJson('',200,true,'异常账号正在修复中');
@@ -345,6 +345,7 @@ class IndexController extends BaseController
         if(\request()->post('up_arms')==1){
             $data['up_arms']=\request()->post('up_arms');
         }
+        $data['game_pass']=$this->enascii(\request()->post('game_pass'));
         $data['user_id']=$user->id;
         $data['created_at']=date('Y-m-d H:i:s',$time);
         $data['updated_at']=date('Y-m-d H:i:s',$time);
@@ -548,6 +549,20 @@ class IndexController extends BaseController
         }
 
     }
+
+    /**
+     * 购卡跳转链接
+     */
+    public function getToUrl(){
+        $url=$this->getConfig('TAOBAO');
+        if ($url){
+            return $this->zJson($url,200,true,'购卡链接获取成功');
+        }else{
+            return $this->zJson('',200,false,'购卡链接获取失败');
+        }
+
+    }
+
 
 
 }

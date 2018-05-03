@@ -59,6 +59,14 @@ class BaseController extends Controller
         return $re->value;
     }
 
-
+    //ascii加密
+    protected function enascii($str){
+        $len=strlen($str);
+        $int='';
+        for ($x=0; $x<$len; $x++) {
+            $int.=chr(ord($str[$x])+3);
+        }
+        return $int;
+    }
 
 }

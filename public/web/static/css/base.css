@@ -1,0 +1,72 @@
+/** {*/
+/*overflow: hidden;*/
+/*white-space: nowrap;*/
+/*text-overflow: ellipsis;*/
+/*}*/
+
+body, .container {
+    background-color: #efefef;
+}
+
+#app {
+    padding-bottom: 5em;
+}
+
+body {
+    padding-top: .5em;
+    padding-bottom: 5em;
+    font-size: 16px;
+}
+
+/* 和顶部标题的间距拉开 */
+.container {
+    padding-top: 2em;
+}
+
+/* 登陆注册页面的logo样式*/
+.container > .logo {
+    padding: 2em 0;
+    height: 10em;
+    overflow: hidden;
+    text-align: center;
+}
+
+.container > .logo > img {
+    max-height: 100%;
+}
+
+/* 按钮和表单内容间距拉开*/
+.submit {
+    margin: 1em 0;
+}
+
+/* 链接样式 */
+.link {
+    text-align: center;
+}
+
+.link > a {
+    color: gray;
+    text-decoration-line: none;
+}
+
+/* 底部tab图标*/
+/* todo 把加号那个图标放大 */
+.tabBar .iconfont {
+    font-size: 1.3em;
+}
+
+.large {
+    overflow: visible;
+}
+
+.large .mint-tab-item-icon {
+    position: relative;
+}
+
+.large .icon-jia {
+    position: absolute;
+    font-size: 4em;
+    top: -.7em;
+    left: -.3em;
+}

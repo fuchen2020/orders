@@ -13,17 +13,23 @@ use think\Session;
 
 class IndexController extends Controller
 {
+    //前台页面入口
+    public function index(){
+
+        $this->redirect(url('/web/login'));
+    }
+
     /**
-     * 显示资源列表
+     * 后台首页
      *
      * @return \think\Response
      */
-    public function index()
+    public function adminOrder()
     {
         if (empty(session('user'))) {
             return redirect(url('/adminLogin'));
         }
-        return $this->fetch();
+        return $this->fetch('index');
     }
     /**
      * 后台登陆
@@ -32,7 +38,7 @@ class IndexController extends Controller
     public function adminLogin(){
         //检查cookie
         if (!empty(session('user'))) {
-            return redirect(url('/index'));
+            return redirect(url('/adminOrder'));
         }
         if (request()->isPost()) {
 //            dump(request()->post('phone'));exit;
@@ -49,7 +55,7 @@ class IndexController extends Controller
                             $info['is_gl']= $user->is_gl;
                         }
                         session('user',$info);
-                        $this->success('登陆成功', url('/index'));
+                        $this->success('登陆成功', url('/adminOrder'));
                     }else{
                         $this->error('手机号或密码错误!',url('/adminLogin'));
                     }
@@ -97,7 +103,7 @@ class IndexController extends Controller
         }
         $data=(new Users())->all();
         $this->assign('list',$data);
-        return $this->fetch();
+        return $this->fetch('userlists');
     }
 
     /**
@@ -111,7 +117,7 @@ class IndexController extends Controller
         }
         $data=(new Orders())->all();
         $this->assign('list',$data);
-        return $this->fetch();
+        return $this->fetch('orderlists');
     }
 
     /**
@@ -125,7 +131,7 @@ class IndexController extends Controller
         }
         $data=(new Config())->all();
         $this->assign('list',$data);
-        return $this->fetch();
+        return $this->fetch('configlists');
     }
 
     /**
@@ -145,7 +151,7 @@ class IndexController extends Controller
         ];
         $this->assign('list',$data);
         $this->assign('types',$datas);
-        return $this->fetch();
+        return $this->fetch('cardlists');
     }
 
     public function addCard(){
@@ -186,10 +192,32 @@ class IndexController extends Controller
 
         }
 
-
-        return $this->fetch();
+        return $this->fetch('addCard');
     }
 
+    public function userFrozen(){
+        if (empty(session('user'))) {
+            return redirect(url('/adminLogin'));
+        }
+        switch (\request()->param('type')){
+            case 1:
+                $re=(new Users())->where('id',\request()->param('id'))->update(['status'=>2]);
+                if ($re){
+                    $this->success('冻结成功', url('/userlists'));
+                }else{
+                    $this->error('冻结失败');
+                }
+                break;
+            case 2:
+                $re=(new Users())->where('id',\request()->param('id'))->update(['status'=>1]);
+                if ($re){
+                    $this->success('解冻成功', url('/userlists'));
+                }else{
+                    $this->error('解冻失败');
+                }
+                break;
+        }
 
+    }
 
 }

@@ -29,24 +29,7 @@
             <div class="col-sm-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>基本 <small>分类，查找</small></h5>
-                        <div class="ibox-tools">
-                            <a class="collapse-link">
-                                <i class="fa fa-chevron-up"></i>
-                            </a>
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="/static/table_data_tables.html#">
-                                <i class="fa fa-wrench"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-user">
-                                <li><a href="/static/table_data_tables.html#">选项1</a>
-                                </li>
-                                <li><a href="/static/table_data_tables.html#">选项2</a>
-                                </li>
-                            </ul>
-                            <a class="close-link">
-                                <i class="fa fa-times"></i>
-                            </a>
-                        </div>
+                        <h5>配置管理 <small>分类，查找</small></h5>
                     </div>
                     <div class="ibox-content">
                         <table class="table table-striped table-bordered table-hover dataTables-example">

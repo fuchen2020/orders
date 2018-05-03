@@ -40,6 +40,10 @@ Route::post("api/:v/setOrder","api/:v.index/setOrder");
 Route::post("api/:v/recharge","api/:v.index/recharge");
 //获取用户消费记录
 Route::any("api/:v/getConsumeLog","api/:v.index/getConsumeLog");
+//获取购卡地址
+Route::any("api/:v/getToUrl","api/:v.index/getToUrl");
+
+Route::any("api/:v/test","api/:v.reg/test");
 
 
 Route::any("logout","index/index/logout");
@@ -48,6 +52,7 @@ Route::any("orderLists","index/index/orderLists");
 Route::any("configLists","index/index/configLists");
 Route::any("cardLists","index/index/cardLists");
 Route::any("adminLogin","index/index/adminLogin");
-Route::any("index","index/index/index");
+Route::any("adminOrder","index/index/adminOrder");
 Route::any("addCard","index/index/addCard");
-
+//前台入口路由
+Route::any("index","index/index/index");

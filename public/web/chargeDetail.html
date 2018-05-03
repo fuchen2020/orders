@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>消费纪录</title>
+    <link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+    <link rel="stylesheet" href="static/css/base.css">
+    <link rel="stylesheet" href="static/font/iconfont.css">
+    <style>
+        .mint-tab-container {
+            margin-top: .5em;
+        }
+
+        .mint-cell-wrapper {
+            border-bottom: 1px solid #efefef;
+        }
+
+        .iconfont {
+            display: inline-block;
+            margin-right: .5em;
+        }
+
+        .icon-48 {
+            color: blue;
+        }
+
+        .icon-jiangli {
+            color: yellowgreen;
+        }
+
+        .icon-zhichu {
+            color: red;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <mt-header fixed title="消费纪录">
+        <mt-button icon="back" slot="left" @click="goHome"></mt-button>
+    </mt-header>
+    <mt-navbar v-model="selected" @click.native="getList">
+        <mt-tab-item id="recharge">充值纪录</mt-tab-item>
+        <mt-tab-item id="payout">消费纪录</mt-tab-item>
+        <mt-tab-item id="reward">奖励纪录</mt-tab-item>
+        <mt-tab-item id="payback">退还纪录</mt-tab-item>
+    </mt-navbar>
+    <mt-tab-container v-model="selected">
+        <mt-tab-container-item id="recharge">
+            <mt-cell v-for="(item, index) in recharge.list" @click.native="showDetail('recharge', index)" :key="item.created_time" :title="'充值点数 '+item.point"
+                     :label="'充值时间 '+item.created_at" :value="'帐户余额 '+item.current_point">
+                <span class="iconfont icon-48" slot="icon"></span>
+            </mt-cell>
+        </mt-tab-container-item>
+        <mt-tab-container-item id="reward">
+            <mt-cell v-for="(item, index) in reward.list" @click.native="showDetail('reward', index)" :key="item.created_at" :title="'奖励点数 '+item.point" :label="'奖励时间 '+item.created_at"
+                     :value="'帐户余额 '+item.current_point">
+                <span class="iconfont icon-jiangli" slot="icon"></span>
+            </mt-cell>
+        </mt-tab-container-item>
+        <mt-tab-container-item id="payout">
+            <mt-cell v-for="(item, index) in payout.list" @click.native="showDetail('payout', index)" :key="item.created_at" :title="'消费点数 '+item.point" :label="'消费时间 '+item.created_at"
+                     :value="'帐户余额 '+item.current_point">
+                <span class="iconfont icon-zhichu" slot="icon"></span>
+            </mt-cell>
+        </mt-tab-container-item>
+        <mt-tab-container-item id="payback">
+            <mt-cell v-for="(item, index) in payback.list" @click.native="showDetail('payback', index)" :key="item.created_at" :title="'退还点数 '+item.point" :label="`退还时间 ` + item.created_at"
+                     :value="'帐户余额 ' + item.current_point ">
+                <span class="iconfont icon-jiangli" slot="icon"></span>
+            </mt-cell>
+        </mt-tab-container-item>
+    </mt-tab-container>
+</div>
+<!-- 先引入 Vue -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+<script src="static/js/validator.js"></script>
+<script src="static/js/fly.js"></script>
+<script src="static/js/base.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            selected: 'recharge',
+            recharge: {list: [], page: 1, type: 1},
+            payout: {list: [], page: 1, type: 2},
+            reward: {list: [], page: 1, type: 3},
+            payback: {list: [], page: 1, type: 4}
+        },
+        methods: {
+            // 显示订单详情
+            showDetail(key, index) {
+                const obj = this[key].list[index];
+                this.$messagebox.alert(`<div style="text-align: left;">创建时间: ${obj.created_at}<br>订单编号: ${obj.order_no}<br>变更点数: ${obj.point}<br> 帐户余额: ${obj.current_point}<br>详情: ${obj.reason}</div>`,'订单详情')
+            },
+            // 返回个人中心首页
+            goHome() {
+                location.href = './home.html';
+            },
+            // 获取请求参数
+            getParam(obj) {
+                return {
+                    type: obj.type,
+                    page: obj.page
+                }
+            },
+            // 请求接口获取数据
+            getList() {
+                const that = this;
+                const key = this.selected.toString();
+                const obj = this[key];
+                const param = this.getParam(obj);
+                fly.get('getConsumeLog', param)
+                    .then(res => {
+                        this.$toast(res.data.msg);
+                        if (res.data.success) {
+                            that[key].list = res.data.result.data;
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+            }
+        },
+        created() {
+            this.getList.call(this)
+        }
+    })
+</script>
+</body>
+</html>

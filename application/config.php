@@ -19,7 +19,7 @@ return [
     // 应用调试模式
     'app_debug'              => true,
     // 应用Trace
-    'app_trace'              => true,
+    'app_trace'              => false,
     // 应用模式状态
     'app_status'             => '',
     // 是否支持多模块
@@ -62,7 +62,7 @@ return [
     // 默认控制器名
     'default_controller'     => 'Index',
     // 默认操作名
-    'default_action'         => 'indexs',
+    'default_action'         => 'index',
     // 默认验证器
     'default_validate'       => '',
     // 默认的空控制器名

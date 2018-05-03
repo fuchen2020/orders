@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>帐号充值</title>
+    <link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+    <link rel="stylesheet" href="static/css/base.css">
+    <link rel="stylesheet" href="static/font/iconfont.css">
+    <style>
+        .notice {
+            background-color: white;
+            margin-top: .5em;
+            padding: 10px;
+            color: #666;
+            font-size: .9em;
+        }
+
+        .notice .small {
+            font-size: .8em;
+        }
+
+        .mint-cell-title {
+            display: flex;
+            align-items: center;
+        }
+
+        .iconfont {
+            font-size: 1.8em;
+            color: #26a2ff;
+            margin-right: .5em;
+        }
+
+        .notice p {
+            margin: .3em 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <mt-header fixed title="帐号充值">
+        <mt-button icon="back" slot="left" @click="goHome"></mt-button>
+    </mt-header>
+    <mt-field class="code" label="兑换充值卡" placeholder="请输入充值卡卡号" v-model="cam.value"></mt-field>
+    <div class="notice">
+        <p>充值说明:</p>
+        <p class="small">
+            1, 在淘宝上购买充值卡,输入到上面后点击充值即可
+            <br>
+            2, 充值过程中,遇到任何问题请联系客服处理
+        </p>
+    </div>
+    <div class="payState" style="margin-top: 1em;background-color: #fff;">
+        <div class="title" style="padding: 8px;border-bottom:1px solid #efefef;">请选择购买方式 <span class="red"
+                                                                                               style="color:red">1元=10元币</span>
+        </div>
+        <mt-cell :to="url" title="淘宝店铺购买" value=">" style="border-bottom:1px solid #efefef;">
+            <span class="iconfont icon-unie651" style="color:red;" slot="icon"></span>
+        </mt-cell>
+        <mt-cell to="http://wpa.qq.com/msgrd?v=3&uin=240490491&site=qq&menu=yes" title="联系QQ客服" value=">">
+            <span class="iconfont icon-qq" slot="icon"></span>
+        </mt-cell>
+    </div>
+    <mt-button class="submit" size="large" :type="cam.type" :disabled="cam.disabled" @click.native="submit">立即充值
+    </mt-button>
+</div>
+<!-- 先引入 Vue -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+<script src="static/js/validator.js"></script>
+<script src="static/js/fly.js"></script>
+<script src="static/js/base.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            cam: {value: '', type: 'primary', disabled: false},
+            url: ''
+        },
+        methods: {
+            // 返回个人中心首页
+            goHome() {
+                location.href = './home.html';
+            },
+            // 立即充值
+            submit() {
+                // 验证卡号
+                if (this.cam.length < 1) {
+                    return this.$toast('请输入卡号');
+                }
+                // 禁用按钮
+                this.cam.type = `default`;
+                this.cam.disabled = true;
+                fly.post('recharge', {
+                    cam: this.cam.value
+                })
+                    .then(res => {
+                        this.$toast(res.data.msg);
+                        if (res.data.success) {
+                            return location.href = './home.html';
+                        }
+                        this.cam.type = 'primary';
+                        this.cam.disabled = false;
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        this.cam.type = 'primary';
+                        this.cam.disabled = false;
+                    })
+            }
+        },
+        created() {
+            const that = this;
+            fly.get('getToUrl')
+                .then(res => {
+                    if (res.data.success)
+                        that.url = res.data.result;
+                    else
+                        that.$toast(res.data.msg);
+                })
+                .catch(err => {
+                    that.$toast(res.data.msg);
+                });
+        }
+    })
+</script>
+</body>
+</html>

@@ -125,4 +125,35 @@ class RegController extends CurlController
 
     }
 
+
+    /**
+     * 加密
+     * @param string $string [需要加密的字符串]
+     * @param string $skey [加密的key]
+     * @return [type]   [加密后]
+     */
+    function encode($string = '', $skey = 'kami')
+    {
+        $strArr = str_split(base64_encode($string));
+        $strCount = count($strArr);
+        foreach (str_split($skey) as $key => $value)
+            $key < $strCount && $strArr[$key].=$value;
+        return str_replace(array('=', '+', '/'), array('O0O0O', 'o000o', 'oo00o'), join('', $strArr));
+    }
+
+    /**
+     * 解密
+     * @param string $string [加密后的值]
+     * @param string $skey [加密的key]
+     * @return [type]   [加密前的字符串]
+     */
+    function decode($string = '', $skey = 'kami')
+    {
+        $strArr = str_split(str_replace(array('O0O0O', 'o000o', 'oo00o'), array('=', '+', '/'), $string), 2);
+        $strCount = count($strArr);
+        foreach (str_split($skey) as $key => $value)
+            $key <= $strCount && isset($strArr[$key]) && $strArr[$key][1] === $value && $strArr[$key] = $strArr[$key][0];
+        return base64_decode(join('', $strArr));
+    }
+
 }
