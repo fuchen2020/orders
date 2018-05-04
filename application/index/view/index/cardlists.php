@@ -32,7 +32,7 @@
                         <h5>卡密管理 <small>分类，查找</small></h5>
                     </div>
                     <div class="ibox-content">
-                        <table class="table table-striped table-bordered table-hover dataTables-example">
+                        <table id="ts" class="table table-striped table-bordered table-hover dataTables-example">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -43,23 +43,19 @@
                                     <th>创建时间</th>
                                     <th>使用用户ID</th>
                                     <th>被使用时间</th>
-                                    <th>操 作</th>
                                 </tr>
                             </thead>
                             <tbody>
                             {volist name="list" id="data"}
                                 <tr class="gradeC">
                                     <td>{$data.id}</td>
-                                    <td>{$data.card_no}</td>
+                                    <td >{$data.card_no}</td>
                                     <td>{$types[$data.type]}</td>
                                     <td>{$data.point}</td>
                                     <td>{$data.status==1?'未使用':'已使用'}</td>
                                     <td>{$data.created_at}</td>
                                     <td>{$data.user_id}</td>
                                     <td>{$data.updated_at}</td>
-                                    <td >
-                                       <a href="#" class="btn btn-warning">复制</a>
-                                    </td>
                                 </tr>
                             {/volist}
                         </table>
@@ -78,6 +74,29 @@
     <script src="/layer/layer.js"></script>
     <script>
         $(document).ready(function(){$(".dataTables-example").dataTable();var oTable=$("#editable").dataTable();oTable.$("td").editable("http://www.zi-han.net/theme/example_ajax.php",{"callback":function(sValue,y){var aPos=oTable.fnGetPosition(this);oTable.fnUpdate(sValue,aPos[0],aPos[1])},"submitdata":function(value,settings){return{"row_id":this.parentNode.getAttribute("id"),"column":oTable.fnGetPosition(this)[2]}},"width":"90%","height":"100%"})});function fnClickAddRow(){$("#editable").dataTable().fnAddData(["Custom row","New row","New row","New row","New row"])};
+    </script>
+    <script>
+        function dataToTxt(tableid)
+        {
+            var file_name=window.prompt("请指定输出文件名称(.txt)","C://ExportTxt.txt");
+            if(file_name!=null)
+            {
+                var curTbl = document.getElementById(tableid);
+                file_name=file_name.split("//").join("////");
+                alert(file_name);
+                var FSO=new ActiveXObject("Scripting.FileSystemObject");
+                var f1 = FSO.CreateTextFile(file_name, true);
+                var Lenr = curTbl.rows.length; //取得表格行数
+                for (i = 0; i < Lenr; i++){
+                    var Lenc = curTbl.rows(i).cells.length; //取得每行的列数
+                    for (j = 0; j < Lenc; j++){
+                        f1.write(curTbl.rows(i).cells(j).innerText+" "); //赋值
+                    }
+                    f1.write("\r\n");
+                }
+                f1.close();
+            }
+        }
     </script>
 
 </body>

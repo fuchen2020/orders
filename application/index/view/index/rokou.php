@@ -1,1 +1,14 @@
-<h1>苏丹红咖啡红色的部分可不是对方讲课的讲课的讲课发生就拉倒呗</h1>
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小雨云管理系统</title>
+
+</head>
+<body>
+
+
+</body>
+</html>

@@ -58,25 +58,33 @@ class IndexController extends BaseController
         }
         $page=\request()->param('page')?:1;
         $size=\request()->param('size')?:10;
+        if(!empty(\request()->param('keywords'))){
+            $tj=\request()->param('keywords');
+        }
         $order=new Orders();
         switch (\request()->param('type')){
             case 1:
-                $orderList=$order->where(['user_id'=>$user->id])
-                    ->where('status','<',5)
-                	 ->order('created_at', 'desc')
+                $orderList=$order->where(['user_id'=>$user->id]);
+                if(!empty($tj)){
+                    $orderList->where(['game_id'=>array('like', "%$tj%")])
+                        ->where('status','<',5);
+                }else{
+                    $orderList->where('status','<',5);
+                }
+                $list=$orderList->order('created_at', 'desc')
                     ->paginate($size,true,[
                         'page'=>$page,
                     ])->toArray();
-                if ($orderList['data']){
-                    return $this->zJson($orderList,200,true,'未完成订单获取成功');
+                if ($list['data']){
+                    return $this->zJson($list,200,true,'订单获取成功');
                 }else{
-                    return $this->zJson('',200,false,'未完成订单获取失败');
+                    return $this->zJson('',200,false,'没有更多订单数据了');
                 }
                 break;
             case 2:
                 $orderList=$order->where(['user_id'=>$user->id])
                     ->where(['status'=>5])
-                   ->order('created_at', 'desc')
+                   ->order('created_at', 'asc')
                     ->paginate($size,true,[
                         'page'=>$page,
                     ])->toArray();
@@ -87,7 +95,6 @@ class IndexController extends BaseController
                 }
                 break;
         }
-
     }
 
     /**
@@ -182,7 +189,7 @@ class IndexController extends BaseController
                     if ($re) {
                         $re->status=4;
                         $re->orderid=null;
-                        if ($re->save()) {
+                        if ($re->update()) {
                             //修改订单状态为已完成，到期时间修改为当前时间，
                             $order=(new Orders())->where('order_no',$orderNo)->find();
                             if ($order){
@@ -203,15 +210,15 @@ class IndexController extends BaseController
                                 $res=$order->save(['status'=>5,'end_time'=>$time,'point'=>$point]);
                                 //更新用户账户余额
                                 $user=(new Users())->where('id',$order->user_id)->find();
-                                $user->point+=$returnPoint;
-                                $res1=$user->save();
+                                $upoint=$user->point+$returnPoint;
+                                $res1=(new Users())->where('id',$order->user_id)->update(['point'=>$upoint]);
                                 //存消费记录
                                 $res2=(new ConsumeLog())->insert([
                                     'user_id'=>$order->user_id,
                                     'type'=>4,
                                     'point'=>$returnPoint,
                                     'order_no'=>$orderNo,
-                                    'current_point'=>$user->point,
+                                    'current_point'=>$upoint,
                                     'reason'=>"订单编号为： $orderNo 的订单提前结束，使用时间为： $h 小时，退还点数为 $returnPoint 点",
                                     'created_at'=>$time,
                                 ]);
@@ -345,6 +352,15 @@ class IndexController extends BaseController
         if(\request()->post('up_arms')==1){
             $data['up_arms']=\request()->post('up_arms');
         }
+        //保留工人
+        if(\request()->post('save_worker')==1){
+            $data['save_worker']=\request()->post('save_worker');
+        }
+        //宝石加速
+        if(\request()->post('up_speed')==1){
+            $data['up_speed']=\request()->post('up_speed');
+        }
+
         $data['game_pass']=$this->enascii(\request()->post('game_pass'));
         $data['user_id']=$user->id;
         $data['created_at']=date('Y-m-d H:i:s',$time);
@@ -562,8 +578,6 @@ class IndexController extends BaseController
         }
 
     }
-
-
 
 }
 

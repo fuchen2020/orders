@@ -38,7 +38,7 @@
     </style>
 </head>
 <body>
-<div class="container" id="app">
+<div class="container" id="app" v-cloak>
     <mt-header fixed title="消费纪录">
         <mt-button icon="back" slot="left" @click="goHome"></mt-button>
     </mt-header>
@@ -120,6 +120,9 @@
                         this.$toast(res.data.msg);
                         if (res.data.success) {
                             that[key].list = res.data.result.data;
+                        }
+                        if (res.data.code === 400) {
+                            location.href = './login.html';
                         }
                     })
                     .catch(err => {

@@ -50,8 +50,7 @@
                                     <td>{$data.value}</td>
                                     <td>{$data.zhushi}</td>
                                     <td >
-                                       <a href="#" class="btn btn-warning">修改</a>
-                                        <a href="#" class="btn btn-info">删除</a>
+                                       <a onclick="edit({$data.id})" class="btn btn-warning">修改</a>
                                     </td>
                                 </tr>
                             {/volist}
@@ -71,6 +70,31 @@
     <script src="/layer/layer.js"></script>
     <script>
         $(document).ready(function(){$(".dataTables-example").dataTable();var oTable=$("#editable").dataTable();oTable.$("td").editable("http://www.zi-han.net/theme/example_ajax.php",{"callback":function(sValue,y){var aPos=oTable.fnGetPosition(this);oTable.fnUpdate(sValue,aPos[0],aPos[1])},"submitdata":function(value,settings){return{"row_id":this.parentNode.getAttribute("id"),"column":oTable.fnGetPosition(this)[2]}},"width":"90%","height":"100%"})});function fnClickAddRow(){$("#editable").dataTable().fnAddData(["Custom row","New row","New row","New row","New row"])};
+    </script>
+
+    <script>
+         function edit(id){
+             layer.prompt({title: '请输入要修改的数据值'},function(val, index){
+
+                 if(val){
+                     $.get('/editConfig',{id:id,value:val},function (res) {
+                         if(res.code==200){
+                             layer.msg(res.msg);
+                             layer.closeAll();
+                             window.location.reload();
+                         }else {
+                             layer.msg(res.msg);
+                             layer.closeAll();
+                         }
+                     })
+                 }else {
+                     layer.msg('提交参数不能为空！');
+                 }
+
+
+
+             });
+         }
     </script>
 
 </body>

@@ -87,8 +87,10 @@ class IndexController extends Controller
      * 入口首页
      * @return mixed
      */
-    public function rukou(){
-
+    public function ruKou(){
+        if (empty(session('user'))) {
+            return redirect(url('/adminLogin'));
+        }
         return $this->fetch('rokou');
     }
 
@@ -101,7 +103,7 @@ class IndexController extends Controller
         if (empty(session('user'))) {
             return redirect(url('/adminLogin'));
         }
-        $data=(new Users())->all();
+        $data=(new Users())->order('created_at','desc')->select();
         $this->assign('list',$data);
         return $this->fetch('userlists');
     }
@@ -115,7 +117,7 @@ class IndexController extends Controller
         if (empty(session('user'))) {
             return redirect(url('/adminLogin'));
         }
-        $data=(new Orders())->all();
+        $data=(new Orders())->order('created_at','desc')->select();
         $this->assign('list',$data);
         return $this->fetch('orderlists');
     }
@@ -143,7 +145,7 @@ class IndexController extends Controller
         if (empty(session('user'))) {
             return redirect(url('/adminLogin'));
         }
-        $data=(new Cards())->all();
+        $data=(new Cards())->order('created_at','desc')->select();
         $datas=[
             1=>'天卡',
             2=>'周卡',
@@ -217,6 +219,25 @@ class IndexController extends Controller
                 }
                 break;
         }
+
+    }
+
+    public function editConfig(){
+        if (empty(session('user'))) {
+            return redirect(url('/adminLogin'));
+        }
+        if(\request()->param('value')){
+            $re=(new Config())->where('id',\request()->param('id'))->update(['value'=>\request()->param('value')]);
+            if ($re){
+                return zJson('',200,true,'修改成功');
+            }else{
+                return zJson('',200,true,'修改失败');
+            }
+        }else{
+            return zJson('',200,true,'参数错误');
+
+        }
+
 
     }
 

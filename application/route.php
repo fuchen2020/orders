@@ -44,6 +44,8 @@ Route::any("api/:v/getConsumeLog","api/:v.index/getConsumeLog");
 Route::any("api/:v/getToUrl","api/:v.index/getToUrl");
 
 Route::any("api/:v/test","api/:v.reg/test");
+//搜索账号
+Route::any("api/:v/getGameId","api/:v.index/getGameId");
 
 
 Route::any("logout","index/index/logout");
@@ -54,5 +56,8 @@ Route::any("cardLists","index/index/cardLists");
 Route::any("adminLogin","index/index/adminLogin");
 Route::any("adminOrder","index/index/adminOrder");
 Route::any("addCard","index/index/addCard");
+Route::any("userFrozen","index/index/userFrozen");
+Route::any("ruKou","index/index/ruKou");
+Route::any("editConfig","index/index/editConfig");
 //前台入口路由
 Route::any("index","index/index/index");

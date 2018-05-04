@@ -56,8 +56,8 @@
                                     <td >{$data.status==1?'正常':'冻结'}</td>
                                     <td >{$data.created_at}</td>
                                     <td >
-                                       <a href="#" class="btn btn-warning">冻结</a>
-                                        <a href="#" class="btn btn-info">解冻</a>
+                                       <a href="/userFrozen?type=1&id={$data.id}" class="btn btn-warning">冻结</a>
+                                        <a href="/userFrozen?type=2&id={$data.id}" class="btn btn-info">解冻</a>
                                     </td>
                                 </tr>
                             {/volist}

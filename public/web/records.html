@@ -73,14 +73,14 @@
     </style>
 </head>
 <body>
-<div class="container" id="app">
-    <mt-header fixed title="订单纪录">
+<div class="container" id="app" v-cloak>
+    <mt-header fixed title="已完成订单">
         <mt-button icon="back" slot="left" @click="goHome"></mt-button>
     </mt-header>
-    <mt-navbar v-model="selected">
-        <mt-tab-item id="recharge" @click.native="goList">进行中订单</mt-tab-item>
-        <mt-tab-item id="complete">已完成订单</mt-tab-item>
-    </mt-navbar>
+    <!--<mt-navbar v-model="selected">-->
+        <!--<mt-tab-item id="recharge" @click.native="goList">进行中订单</mt-tab-item>-->
+        <!--<mt-tab-item id="complete">已完成订单</mt-tab-item>-->
+    <!--</mt-navbar>-->
     <mt-tab-container v-model="selected">
         <mt-tab-container-item id="recharge">
         </mt-tab-container-item>
@@ -146,7 +146,7 @@
             },
             // 显示人工需求
             showCustom(custom) {
-                this.$messagebox.alert(custom, '人工需求详情',);
+                this.$messagebox.alert(custom, '人工需求详情');
             },
             // 返回个人中心首页
             goHome() {
@@ -165,6 +165,9 @@
                         that.$toast(res.data.msg);
                         if (res.data.success) {
                             that.orders = that.orders.concat(res.data.result.data);
+                        }
+                        if (res.data.code === 400) {
+                            location.href = './login.html';
                         }
                     })
                     .catch(err => {

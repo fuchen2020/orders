@@ -36,24 +36,36 @@
         .others > .items {
             display: flex;
             justify-content: space-between;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
+        }
+
+        .items > button {
+            margin-bottom: .5em;
         }
 
         .notice > p {
             font-size: .9em;
         }
+
+        /* swipe图片尺寸 */
+        .flexCenter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .banner {
+            max-width: 100%;
+        }
     </style>
 </head>
 <body>
-<div class="container" id="app">
+<div class="container" id="app" v-cloak>
     <mt-header fixed title="申请订单">
     </mt-header>
     <mt-swipe :auto="5000">
-        <mt-swipe-item>
-            <img src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1482438419,4242892625&fm=200&gp=0.jpg">
-        </mt-swipe-item>
-        <mt-swipe-item>
-            <img :src="banner">
+        <mt-swipe-item class="flexCenter" style="display: flex;">
+            <img class="banner" :src="banner">
         </mt-swipe-item>
     </mt-swipe>
     <div class="important">
@@ -74,6 +86,11 @@
         <div class="items">
             <mt-button :type="service.wall.isSelected" size="small" @click.native="isSelected('wall')">刷墙</mt-button>
             <mt-button :type="service.house.isSelected" size="small" @click.native="isSelected('house')">升建筑</mt-button>
+            <mt-button :type="service.save_worker.isSelected" size="small" @click.native="isSelected('save_worker')">
+                保留工人
+            </mt-button>
+            <mt-button :type="service.up_speed.isSelected" size="small" @click.native="isSelected('up_speed')">宝石加速
+            </mt-button>
             <mt-button :type="service.fighter.isSelected" size="small" @click.native="isSelected('fighter')">升兵种
             </mt-button>
             <mt-button :type="service.other.isSelected" size="small" @click.native="isSelected('other')">定制需求
@@ -141,6 +158,8 @@
                 wall: {name: '升墙', isSelected: 'default'},
                 house: {name: '升建筑', isSelected: 'default'},
                 fighter: {name: '升兵种', isSelected: 'default'},
+                save_worker: {name: '保留工人', isSelected: 'default'},
+                up_speed: {name: '宝石加速', isSelected: 'default'},
                 other: {name: '定制需求', isSelected: 'default'}
             },
             slots: [ // 游戏版本列表
@@ -182,6 +201,8 @@
                     up_building: this.service.house.isSelected === 'primary' ? 1 : 0,
                     up_arms: this.service.fighter.isSelected === 'primary' ? 1 : 0,
                     is_need: this.service.other.isSelected === 'primary' ? 1 : 0,
+                    save_worker: this.service.other.isSelected === 'primary' ? 1 : 0,
+                    up_speed: this.service.other.isSelected === 'primary' ? 1 : 0,
                     need: this.customService
                 };
                 // 删除没填写的选项
@@ -195,7 +216,6 @@
                     delete param.need;
                 }
                 // 验证小时
-                console.log(!param.time, !/^\d+$/.test(param.time))
                 if (!param.time || !/^\d+$/.test(param.time)) {
                     return this.$toast('时长输入有误');
                 }
@@ -208,7 +228,13 @@
                 if (!param.game_pass) {
                     return this.$toast('游戏密码没填');
                 }
-                if (!param.brush_wall && !param.up_building && !param.up_arms && !param.is_need) {
+                let i = 0;
+                for (let key in this.service) {
+                    if (this.service[key].isSelected !=='default') {
+                        i++;
+                    }
+                }
+                if (i < 1) {
                     return this.$toast('服务项目至少选择一项');
                 }
                 fly.post('setOrder', param)
@@ -226,6 +252,9 @@
                             this.customService = '';
                             this.custom = false;
                         }
+                        if (res.data.code === 400) {
+                            location.href = './login.html';
+                        }
                     })
                     .catch(err => {
                         console.log(err);
@@ -234,42 +263,50 @@
             // 显示时间picker
             showTime() {
                 this.timeVisible = !this.timeVisible;
-            },
+            }
+            ,
             changeTime(evn) {
                 this.tempTime = evn.values[0];
-            },
+            }
+            ,
             setTime(isChange) {
                 if (isChange) {
                     this.time = this.tempTime;
                 }
                 this.timeVisible = !this.timeVisible;
-            },
+            }
+            ,
             // 跳转到订单列表,即首页
             goOrderList() {
                 location.href = 'list.html';
-            },
+            }
+            ,
             // 跳转到个人中心,即我的
             goAccountHome() {
                 location.href = 'home.html';
-            },
+            }
+            ,
             // 服务项目选中状态
             isSelected(key) {
                 this.service[key].isSelected = this.service[key].isSelected === 'default' ? 'primary' : 'default';
                 if (key === 'other') {
                     this.custom = !this.custom;
                 }
-            },
+            }
+            ,
             // 获取游戏版本
             changeVersion(evn) {
                 this.tempVersion = evn.values[0];
-            },
+            }
+            ,
             // 选中游戏版本
             setVersion(isChange) {
                 if (isChange) {
                     this.currentVersion = this.tempVersion;
                 }
                 this.popupVisible = !this.popupVisible;
-            },
+            }
+            ,
             // 显示游戏版本弹容
             showPopup() {
                 this.popupVisible = !this.popupVisible;
@@ -285,6 +322,9 @@
                     } else {
                         that.$toast(res.data.msg);
                     }
+                    if (res.data.code === 400) {
+                        location.href = './login.html';
+                    }
                 })
                 .catch(err => {
                     console.log(err);
@@ -297,6 +337,9 @@
                         that.explain = res.data.result.explain;
                     } else {
                         that.$toast(res.data.msg);
+                    }
+                    if (res.data.code === 400) {
+                        location.href = './login.html';
                     }
                 })
                 .catch(err => {

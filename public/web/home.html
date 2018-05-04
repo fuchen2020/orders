@@ -24,27 +24,21 @@
             margin-top: 1em;
         }
 
-        .charge > .recharge {
+        .recharge {
             display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            margin-bottom: 1em;
-        }
-
-        .charge > .recharge > .userInfo {
-            display: flex;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
         }
 
-        .charge > .recharge > .userInfo > .image {
-            margin-right: .3em;
-            width: 2em;
-            height: 2em;
+        .recharge .image {
+            border-radius: 5em;
+            width: 5em;
+            height: 5em;
+            margin-bottom: .5em;
             background-color: #000;
         }
 
-        .charge > .recharge > .userInfo > .image > img {
+        .image img {
             max-width: 100%;
         }
 
@@ -112,17 +106,17 @@
     </style>
 </head>
 <body>
-<div class="container" id="app">
+<div class="container" id="app" v-cloak>
     <mt-header fixed title="个人中心"></mt-header>
     <div class="charge">
         <div class="recharge">
-            <div class="userInfo">
-                <div class="image">
-                    <img src="https://gw.alicdn.com/tps/TB1W_X6OXXXXXcZXVXXXXXXXXXX-400-400.png" alt="">
-                </div>
-                <span>{{name}}</span>
+            <div class="image">
+                <img src="https://gw.alicdn.com/tps/TB1W_X6OXXXXXcZXVXXXXXXXXXX-400-400.png" alt="">
             </div>
-            <mt-button size="small" type="primary" @click="goRecharge">充值</mt-button>
+            <div class="userInfo" style="text-align:center;">
+                <div style="margin-bottom: .5em;">{{name}}</div>
+                <mt-button size="normal" type="primary" @click="goRecharge">充值</mt-button>
+            </div>
         </div>
         <div class="money">
             <div class="balance">
@@ -136,20 +130,23 @@
         </div>
     </div>
     <div class="list">
-        <mt-cell title="订单纪录" value=">" to="./records.html">
+        <mt-cell title="已完成订单" value=">" to="./records.html">
             <span class="iconfont icon-dingdan" slot="icon"></span>
         </mt-cell>
         <mt-cell title="消费纪录" value=">" to="./chargeDetail.html">
             <span class="iconfont icon-qianbi" slot="icon"></span>
         </mt-cell>
         <!--<mt-cell title="奖励纪录" value=">">-->
-            <!--<span class="iconfont icon-qiandai" slot="icon"></span>-->
+        <!--<span class="iconfont icon-qiandai" slot="icon"></span>-->
         <!--</mt-cell>-->
         <mt-cell title="联系客服" value=">" to="http://wpa.qq.com/msgrd?v=3&uin=240490491&site=qq&menu=yes">
             <span class="iconfont icon-qq" slot="icon"></span>
         </mt-cell>
+        <mt-cell title="退出" value=">" to="./login.html">
+            <span class="iconfont icon-tuichu" slot="icon"></span>
+        </mt-cell>
     </div>
-    <mt-tabbar class="tabBar" v-model="selected">
+    <mt-tabbar class="tabBar" v-model="selected" fixed>
         <mt-tab-item id="tab1" @click.native="goOrderList">
             <span class="iconfont icon-shouye" slot="icon"></span>
             首页
@@ -187,10 +184,10 @@
                 location.href = './recharge.html';
             },
             // 订单列表页面即标注的首页
-            goOrderList(){
+            goOrderList() {
                 location.href = 'list.html';
             },
-            goOrderCreate(){
+            goOrderCreate() {
                 location.href = 'create.html';
             }
         },
@@ -203,8 +200,12 @@
             fly.config.headers.token = token;
             fly.get('getUser')
                 .then(res => {
-                    Object.assign(this._data, res.data.result);
-                    console.log(this._data)
+                    if (res.data.success) {
+                        Object.assign(this._data, res.data.result);
+                    }
+                    if (res.data.code === 400) {
+                        location.href = './login.html';
+                    }
                 })
                 .catch(err => {
                     console.log(err);

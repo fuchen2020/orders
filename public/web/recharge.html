@@ -39,7 +39,7 @@
     </style>
 </head>
 <body>
-<div class="container" id="app">
+<div class="container" id="app" v-cloak>
     <mt-header fixed title="帐号充值">
         <mt-button icon="back" slot="left" @click="goHome"></mt-button>
     </mt-header>
@@ -54,7 +54,7 @@
     </div>
     <div class="payState" style="margin-top: 1em;background-color: #fff;">
         <div class="title" style="padding: 8px;border-bottom:1px solid #efefef;">请选择购买方式 <span class="red"
-                                                                                               style="color:red">1元=10元币</span>
+                                                                                               style="color:red">1元=10点数</span>
         </div>
         <mt-cell :to="url" title="淘宝店铺购买" value=">" style="border-bottom:1px solid #efefef;">
             <span class="iconfont icon-unie651" style="color:red;" slot="icon"></span>
@@ -104,6 +104,9 @@
                         }
                         this.cam.type = 'primary';
                         this.cam.disabled = false;
+                        if (res.data.code === 400) {
+                            location.href = './login.html';
+                        }
                     })
                     .catch(err => {
                         console.log(err);
@@ -120,6 +123,9 @@
                         that.url = res.data.result;
                     else
                         that.$toast(res.data.msg);
+                    if (res.data.code === 400) {
+                        location.href = './login.html';
+                    }
                 })
                 .catch(err => {
                     that.$toast(res.data.msg);

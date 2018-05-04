@@ -19,6 +19,9 @@
             padding: .5em;
         }
 
+        .btn .title , .status .title{
+            white-space: nowrap;
+        }
         .item > .content {
             display: flex;
             flex-direction: row;
@@ -30,6 +33,12 @@
             text-align: center;
         }
 
+        .status {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
         .status.warn {
             color: #ffc107;
         }
@@ -83,6 +92,9 @@
             display: flex;
             justify-content: flex-end;
         }
+        .badge > span {
+            margin-bottom: .5em;
+        }
 
         .item > .btn {
             display: flex;
@@ -96,30 +108,36 @@
     </style>
 </head>
 <body>
-<div class="container" id="app">
+<div class="container" id="app" v-cloak>
     <mt-header fixed title="设备列表"></mt-header>
+    <mt-field label="游戏帐号" placeholder="请输入游戏帐号查询" v-model="keywords" style="margin-bottom:1em;">
+        <mt-button type="primary" @click="searchList">搜索</mt-button>
+    </mt-field>
     <div class="item" v-for="(item, index) in orders">
         <!-- 主体内容 -->
         <div class="content">
             <!-- 左侧状态图标 -->
             <div class="status loading"
                  :class="item.status === '登陆中' || item.status === '进行中' ? 'success' : item.status === '暂停中' ? 'warn' : 'error'">
-                <div class="iconfont icon-shouji-tianchong"></div>
+                <div class="iconfont icon-shouji-tianchong" style="font-size: 2.5em;"></div>
                 <div class="title">{{item.status}}</div>
             </div>
             <!-- 右侧订单详情 -->
             <div class="detail">
                 <div class="info">
                     <div class="order">订单号:{{item.order_no}}</div>
-                    <div class="status">游戏版本:{{item.game_version}}</div>
+                    <div class="xx">游戏版本:{{item.game_version}}</div>
+                    <div class="sxx">游戏帐号:{{item.game_id}}</div>
                     <div class="time">代练时长:{{item.time}}小时</div>
                     <div class="time">到期时间:{{item.end_time}}</div>
-                    <div class="status">订单状态:{{item.status}}</div>
+                    <div class="sus">订单状态:{{item.status}}</div>
                     <div class="badge">
                         <mt-badge size="small" type="primary" v-if="item.brush_wall">刷墙</mt-badge>
                         <mt-badge size="small" type="success" v-if="item.up_building">升级建筑</mt-badge>
                         <mt-badge size="small" type="error" v-if="item.up_arms">升级兵种</mt-badge>
                         <mt-badge size="small" type="warning" v-if="item.is_need">人工需求</mt-badge>
+                        <mt-badge size="small" style="background-color: gray;" v-if="item.save_worker">保留工人</mt-badge>
+                        <mt-badge size="small" style="background-color: deeppink;" v-if="item.up_speed">宝石加速</mt-badge>
                     </div>
                 </div>
                 <div class="btn"
@@ -181,6 +199,7 @@
         el: '#app',
         data: {
             selected: 'tab1',
+            keywords: '',
             page: 1,
             type: 1,
             orders: [],
@@ -201,11 +220,10 @@
             },
             // 显示人工需求
             showCustom(custom) {
-                this.$messagebox.alert(custom, '人工需求详情',);
+                this.$messagebox.alert(custom, '人工需求详情');
             },
             // 操作订单
             operateOrder(orderId, index) {
-                console.log(orderId, index, this.orders[index].status);
                 switch (this.orders[index].status) {
                     case '暂停中':
                         this.startTask.call(this, orderId, index);
@@ -230,7 +248,6 @@
             },
             // 设置订单状态
             setOrderStatus(type, orderId, index) {
-                console.log(type, orderId, index)
                 const that = this;
                 fly.post('setOrderStatus', {
                     type,
@@ -250,6 +267,8 @@
                                     that.orders.splice(index, 1);
                                     break;
                             }
+                        }
+                        if (res.data.code === 400) {
                         }
                         console.log(res);
                     })
@@ -295,10 +314,33 @@
                             that.orders[that.index].status = '登陆中';
                         }
                         that.reload = !that.reload;
+                        if (res.data.code === 400) {
+                            location.href = './login.html';
+                        }
                     })
                     .catch(err => {
                         console.log(err)
                     });
+            },
+            // 搜索订单
+            searchList() {
+                const that = this;
+                this.page = 1;
+                const param = {
+                    page: this.page,
+                    keywords: this.keywords,
+                    type: 1
+                };
+                fly.get('getOrderList', param)
+                    .then(res => {
+                        that.$toast(res.data.msg);
+                        if (res.data.success) {
+                            that.orders = res.data.result.data;
+                        }
+                        if (res.data.code === 400) {
+                            location.href = './login.html';
+                        }
+                    })
             },
             // 加载下页数据
             loadMore() {
@@ -306,14 +348,17 @@
                 this.page = this.page + 1;
                 const param = {
                     page: this.page,
-                    type: 1,
-                    size:1
+                    keywords: this.keywords,
+                    type: 1
                 };
                 fly.get('getOrderList', param)
                     .then(res => {
                         that.$toast(res.data.msg);
                         if (res.data.success) {
                             that.orders = that.orders.concat(res.data.result.data);
+                        }
+                        if (res.data.code === 400) {
+                            location.href = './login.html';
                         }
                     })
                     .catch(err => {
@@ -326,14 +371,17 @@
             const that = this;
             const param = {
                 page: this.page,
-                type: this.type
+                type: this.type,
+                keywords: this.keywords
             };
             fly.get('getOrderList', param)
                 .then(res => {
                     that.$toast(res.data.msg);
                     if (res.data.success) {
-                        console.log(res.data.result);
                         that.orders = res.data.result.data;
+                    }
+                    if (res.data.code === 400) {
+                        location.href = './login.html';
                     }
                 })
                 .catch(err => {

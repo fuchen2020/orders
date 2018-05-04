@@ -3,7 +3,8 @@
 /*white-space: nowrap;*/
 /*text-overflow: ellipsis;*/
 /*}*/
-
+/* vue隐藏*/
+[v-cloak] { display: none }
 body, .container {
     background-color: #efefef;
 }
@@ -51,7 +52,6 @@ body {
 }
 
 /* 底部tab图标*/
-/* todo 把加号那个图标放大 */
 .tabBar .iconfont {
     font-size: 1.3em;
 }

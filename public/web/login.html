@@ -17,7 +17,7 @@
     </style>
 </head>
 <body>
-<div class="container" id="app">
+<div class="container" id="app" v-cloak>
     <mt-header fixed title="登陆"></mt-header>
     <div class="logo">
         <img src=https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3169309491,3410593409&fm=27&gp=0.jpg""
@@ -75,6 +75,9 @@
                             // todo token应该加密之后再存
                             localStorage.setItem('token', res.data.result.sign);
                             location.href = './home.html'
+                        }
+                        if (res.data.code === 400) {
+                            location.href = './login.html';
                         }
                     })
                     .catch(err => {

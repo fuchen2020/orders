@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="static/css/base.css">
 </head>
 <body>
-<div class="container" id="app">
+<div class="container" id="app" v-cloak>
     <mt-header fixed title="注册">
         <mt-button icon="back" slot="left" @click="goLogin">返回</mt-button>
     </mt-header>
@@ -122,6 +122,9 @@
                         if (res.data.success) {
                             console.log(res.data.code);
                             // location.href = './login.html';
+                        }
+                        if (res.data.code === 400) {
+                            location.href = './login.html';
                         }
                     })
                     .catch(err => {

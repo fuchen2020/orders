@@ -66,7 +66,9 @@
         <div id="page-wrapper" class="gray-bg dashbard-1">
             <div class="row border-bottom">
                 <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
-
+                    <span style="color: #0a6aa1;text-align: center">
+                        <h1>欢迎进入小雨云订单管理系统v1.0</h1>
+                    </span>
                 </nav>
             </div>
             <div class="row content-tabs">
@@ -96,10 +98,10 @@
                 <a href="/logout" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i> 退出</a>
             </div>
             <div class="row J_mainContent" id="content-main">
-                <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="" frameborder="0" data-id="index_v1.html" seamless></iframe>
+                <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="/configLists" frameborder="0" data-id="index_v1.html" seamless></iframe>
             </div>
             <div class="footer">
-                <div class="pull-right">&copy; 2014-2015 <a href="http://www.zi-han.net/" target="_blank">zihan's blog</a>
+                <div class="pull-right">&copy; 2018-2019 <a href="http://ad.chenziyong.vip/" target="_blank">DN技术支持</a>
                 </div>
             </div>
         </div>
